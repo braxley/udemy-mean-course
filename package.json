@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "start:server": "nodemon server.js"
+    "server:watch": "nodemon server.js"
   },
   "private": true,
   "dependencies": {
