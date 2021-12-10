@@ -38,6 +38,11 @@ export class PostsService {
     return this.postsUpdated.asObservable();
   }
 
+  getPost(postId: string): Post {
+    // the non-null assertion operator is here for a quick fix
+    return { ...this.posts.find((post: Post) => post.id === postId)! };
+  }
+
   addPost(title: string, content: string) {
     const post: Post = { id: null, title: title, content: content };
     this.httpClient
