@@ -1,17 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendPost, Post } from './post.model';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
-  private posts: Post[] = [];
-  private postsUpdated = new Subject<Post[]>();
+  private posts$$ = new BehaviorSubject<Post[] | null>(null);
 
-  constructor(private httpClient: HttpClient) {}
+  get posts$() {
+    return this.posts$$.asObservable();
+  }
 
-  getPosts() {
+  get posts() {
+    return this.posts$$.value;
+  }
+
+  constructor(private httpClient: HttpClient) {
+    this.initPosts();
+  }
+
+  initPosts() {
     this.httpClient
       .get<{ message: string; posts: BackendPost[] }>(
         'http://localhost:3000/api/posts'
@@ -29,22 +38,20 @@ export class PostsService {
         })
       )
       .subscribe((transformedPosts: Post[]) => {
-        this.posts = transformedPosts;
-        this.postsUpdated.next([...this.posts]);
+        this.posts$$.next(transformedPosts);
       });
   }
 
-  getPostUpdateListener() {
-    return this.postsUpdated.asObservable();
-  }
-
-  getPost(postId: string): Post {
+  getPost(postId: string): Observable<BackendPost> {
     // the non-null assertion operator is here for a quick fix
-    return { ...this.posts.find((post: Post) => post.id === postId)! };
+    // return { ...this.posts.find((post: Post) => post.id === postId)! };
+    return this.httpClient.get<BackendPost>(
+      `http://localhost:3000/api/posts/${postId}`
+    );
   }
 
   addPost(title: string, content: string) {
-    const post: Post = { id: null, title: title, content: content };
+    const post: Post = { title: title, content: content };
     this.httpClient
       .post<{ message: string; postId: string }>(
         'http://localhost:3000/api/posts',
@@ -52,8 +59,19 @@ export class PostsService {
       )
       .subscribe((responseData) => {
         post.id = responseData.postId;
-        this.posts.push(post);
-        this.postsUpdated.next([...this.posts]);
+        this.posts$$.value!.push(post);
+      });
+  }
+
+  updatePost(id: string, title: string, content: string) {
+    this.httpClient
+      .put(`http://localhost:3000/api/posts/${id}`, { title, content })
+      .subscribe(() => {
+        const postInArray = this.posts!.find((post: Post) => post.id === id);
+        if (postInArray) {
+          postInArray.title = title;
+          postInArray.content = content;
+        }
       });
   }
 
@@ -62,9 +80,8 @@ export class PostsService {
       .delete(`http://localhost:3000/api/posts/${postId}`)
       .subscribe(() => {
         console.log('Post deleted!');
-        const updatedPosts = this.posts.filter((post) => post.id !== postId);
-        this.posts = updatedPosts;
-        this.postsUpdated.next(updatedPosts);
+        const updatedPosts = this.posts!.filter((post) => post.id !== postId);
+        this.posts$$.next(updatedPosts);
       });
   }
 }

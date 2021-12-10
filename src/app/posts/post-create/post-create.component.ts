@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Post } from '../post.model';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { tap } from 'rxjs';
+import { BackendPost, Post } from '../post.model';
 import { PostsService } from '../posts.service';
 
 @Component({
@@ -12,13 +13,15 @@ import { PostsService } from '../posts.service';
 export class PostCreateComponent implements OnInit {
   enteredTitle = '';
   enteredContent = '';
-  private mode: 'edit' | 'create' = 'create';
+  currentPost: Post | null = null;
+  mode: 'edit' | 'create' = 'create';
+  isLoading = false;
   private postId: string | null = null;
-  private currentPost: Post | null = null;
 
   constructor(
     public postsService: PostsService,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    public router: Router
   ) {}
 
   ngOnInit() {
@@ -26,7 +29,22 @@ export class PostCreateComponent implements OnInit {
       if (paramMap.has('postId')) {
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
-        this.currentPost = this.postsService.getPost(this.postId!);
+        this.postsService
+          .getPost(this.postId!)
+          .pipe(
+            tap(() => {
+              this.isLoading = true;
+            })
+          )
+          .subscribe((backendPost: BackendPost) => {
+            const loadedPost = {
+              id: backendPost._id,
+              title: backendPost.title,
+              content: backendPost.content,
+            } as Post;
+            this.currentPost = loadedPost;
+            this.isLoading = false;
+          });
       } else {
         this.mode = 'create';
         this.postId = null;
@@ -35,11 +53,19 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
-  onAddPost(form: NgForm) {
+  onSubmitPost(form: NgForm) {
     if (form.invalid) {
       return;
     }
-    this.postsService.addPost(form.value.title, form.value.content);
+    this.isLoading = true;
+    this.mode === 'create'
+      ? this.postsService.addPost(form.value.title, form.value.content)
+      : this.postsService.updatePost(
+          this.currentPost!.id!,
+          form.value.title,
+          form.value.content
+        );
+    this.router.navigate(['/']);
     form.resetForm();
   }
 }

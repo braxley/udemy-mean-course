@@ -1,6 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Post } from '../post.model';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { PostsService } from '../posts.service';
 
 @Component({
@@ -8,29 +6,20 @@ import { PostsService } from '../posts.service';
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.css'],
 })
-export class PostListComponent implements OnInit, OnDestroy {
-  // posts = [
-  //   { title: "First Post", content: "This is the first post's content" },
-  //   { title: "Second Post", content: "This is the second post's content" },
-  //   { title: "Third Post", content: "This is the third post's content" }
-  // ];
-  posts: Post[] = [];
-  private postsSub: Subscription = this.postsService
-    .getPostUpdateListener()
-    .subscribe((posts: Post[]) => {
-      this.posts = posts;
-    });
+export class PostListComponent {
+  isLoading = true;
+  posts$ = this.postsService.posts$;
 
-  constructor(public postsService: PostsService) {}
+  constructor(
+    public postsService: PostsService,
+    private cdRef: ChangeDetectorRef
+  ) {}
 
-  ngOnInit() {
-    this.postsService.getPosts();
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
   }
 
-  onDeletePost(postId: string | null) {
+  onDeletePost(postId: string) {
     this.postsService.deletePost(postId);
-  }
-  ngOnDestroy() {
-    this.postsSub.unsubscribe();
   }
 }
