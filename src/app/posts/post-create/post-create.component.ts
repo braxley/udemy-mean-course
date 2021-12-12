@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { BackendPost, Post } from '../post.model';
@@ -16,13 +16,21 @@ export class PostCreateComponent implements OnInit {
   currentPost: Post | null = null;
   mode: 'edit' | 'create' = 'create';
   isLoading = false;
+  form: FormGroup;
   private postId: string | null = null;
 
   constructor(
     public postsService: PostsService,
     public activatedRoute: ActivatedRoute,
     public router: Router
-  ) {}
+  ) {
+    this.form = new FormGroup({
+      title: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)],
+      }),
+      content: new FormControl(null, { validators: [Validators.required] }),
+    });
+  }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe((paramMap: ParamMap) => {
@@ -37,12 +45,16 @@ export class PostCreateComponent implements OnInit {
             })
           )
           .subscribe((backendPost: BackendPost) => {
-            const loadedPost = {
+            console.log(backendPost);
+            this.currentPost = {
               id: backendPost._id,
               title: backendPost.title,
               content: backendPost.content,
             } as Post;
-            this.currentPost = loadedPost;
+            this.form.setValue({
+              title: this.currentPost.title,
+              content: this.currentPost.content,
+            });
             this.isLoading = false;
           });
       } else {
@@ -53,19 +65,22 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
-  onSubmitPost(form: NgForm) {
-    if (form.invalid) {
+  onSubmitPost() {
+    if (this.form.invalid) {
       return;
     }
     this.isLoading = true;
     this.mode === 'create'
-      ? this.postsService.addPost(form.value.title, form.value.content)
+      ? this.postsService.addPost(
+          this.form.value.title,
+          this.form.value.content
+        )
       : this.postsService.updatePost(
           this.currentPost!.id!,
-          form.value.title,
-          form.value.content
+          this.form.value.title,
+          this.form.value.content
         );
     this.router.navigate(['/']);
-    form.resetForm();
+    this.form.reset();
   }
 }

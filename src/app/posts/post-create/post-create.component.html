@@ -1,18 +1,16 @@
 <mat-card>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form (submit)="onSubmitPost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
+  <form [formGroup]="form" (submit)="onSubmitPost()" *ngIf="!isLoading">
     <mat-form-field>
       <input
         matInput
         type="text"
-        name="title"
-        [ngModel]="currentPost?.title"
-        required
-        minlength="3"
+        formControlName="title"
         placeholder="Post Title"
-        #title="ngModel"
       />
-      <mat-error *ngIf="title.invalid">Please enter a post title.</mat-error>
+      <mat-error *ngIf="this.form.get('title')?.invalid"
+        >Please enter a post title.</mat-error
+      >
     </mat-form-field>
     <button mat-stroked-button type="button" (click)="imageUpload.click()">
       Upload Image
@@ -22,13 +20,12 @@
       <textarea
         matInput
         rows="4"
-        name="content"
-        [ngModel]="currentPost?.content"
-        required
+        formControlName="content"
         placeholder="Post Content"
-        #content="ngModel"
       ></textarea>
-      <mat-error *ngIf="content.invalid">Please enter a post title.</mat-error>
+      <mat-error *ngIf="this.form.get('content')?.invalid"
+        >Please enter a post title.</mat-error
+      >
     </mat-form-field>
     <button mat-raised-button color="accent" type="submit">
       {{ mode === "create" ? "Save Post" : "Save Edits" }}
