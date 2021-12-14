@@ -15,7 +15,7 @@
     <button mat-stroked-button type="button" (click)="imageUpload.click()">
       Upload Image
     </button>
-    <input type="file" #imageUpload />
+    <input type="file" #imageUpload (change)="onChangeImage($event)" />
     <mat-form-field>
       <textarea
         matInput

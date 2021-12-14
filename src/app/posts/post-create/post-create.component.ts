@@ -29,6 +29,7 @@ export class PostCreateComponent implements OnInit {
         validators: [Validators.required, Validators.minLength(3)],
       }),
       content: new FormControl(null, { validators: [Validators.required] }),
+      image: new FormControl(null, { validators: [Validators.required] }),
     });
   }
 
@@ -65,7 +66,15 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
+  onChangeImage(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.item(0);
+    this.form.patchValue({ image: file });
+    this.form.get('image')?.updateValueAndValidity();
+  }
+
   onSubmitPost() {
+    console.dir(this.form);
+
     if (this.form.invalid) {
       return;
     }
