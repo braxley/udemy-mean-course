@@ -16,6 +16,9 @@
       Upload Image
     </button>
     <input type="file" #imageUpload (change)="onChangeImage($event)" />
+    <div class="image-preview" *ngIf="filePreview && filePreview !== ''">
+      <img [src]="filePreview" alt="" />
+    </div>
     <mat-form-field>
       <textarea
         matInput
