@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendPost, Post } from './post.model';
@@ -16,7 +17,7 @@ export class PostsService {
     return this.posts$$.value;
   }
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private router: Router) {
     this.initPosts();
   }
 
@@ -32,7 +33,9 @@ export class PostsService {
               title: post.title,
               content: post.content,
               id: post._id,
+              imagePath: '',
             };
+            // imagePath will be adapted later
             return transformedPost;
           });
         })
@@ -50,16 +53,26 @@ export class PostsService {
     );
   }
 
-  addPost(title: string, content: string) {
-    const post: Post = { title: title, content: content };
+  addPost(title: string, content: string, image: File) {
+    const postData = new FormData();
+    postData.append('title', title);
+    postData.append('content', content);
+    postData.append('image', image, title);
+
     this.httpClient
-      .post<{ message: string; postId: string }>(
+      .post<{ message: string; post: Post }>(
         'http://localhost:3000/api/posts',
-        post
+        postData
       )
       .subscribe((responseData) => {
-        post.id = responseData.postId;
-        this.posts$$.value!.push(post);
+        const post: Post = {
+          title: title,
+          content: content,
+          id: responseData.post.id,
+          imagePath: responseData.post.imagePath,
+        };
+        this.posts ? this.posts?.push(post) : this.posts$$.next([post]);
+        this.router.navigate(['/']);
       });
   }
 
@@ -71,6 +84,8 @@ export class PostsService {
         if (postInArray) {
           postInArray.title = title;
           postInArray.content = content;
+          postInArray.imagePath = '';
+          // imagePath will be adapted later
         }
       });
   }

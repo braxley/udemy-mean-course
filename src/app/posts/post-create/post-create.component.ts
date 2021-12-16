@@ -56,6 +56,7 @@ export class PostCreateComponent implements OnInit {
               id: backendPost._id,
               title: backendPost.title,
               content: backendPost.content,
+              imagePath: backendPost.imagePath,
             } as Post;
             this.form.setValue({
               title: this.currentPost.title,
@@ -87,8 +88,6 @@ export class PostCreateComponent implements OnInit {
   }
 
   onSubmitPost() {
-    console.dir(this.form);
-
     if (this.form.invalid) {
       return;
     }
@@ -96,7 +95,8 @@ export class PostCreateComponent implements OnInit {
     this.mode === 'create'
       ? this.postsService.addPost(
           this.form.value.title,
-          this.form.value.content
+          this.form.value.content,
+          this.form.value.image
         )
       : this.postsService.updatePost(
           this.currentPost!.id!,
