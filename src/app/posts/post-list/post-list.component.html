@@ -3,7 +3,14 @@
 </ng-template>
 <div *ngIf="posts$ | async as posts; else loadingSpinner">
   <mat-accordion multi="true" *ngIf="posts.length > 0; else noPosts">
-    <mat-expansion-panel *ngFor="let post of posts">
+    <mat-expansion-panel
+      *ngFor="
+        let post of posts.slice(
+          pageIndex * pageSize,
+          (pageIndex + 1) * pageSize
+        )
+      "
+    >
       <mat-expansion-panel-header>
         {{ post.title }}
       </mat-expansion-panel-header>
@@ -21,7 +28,15 @@
       </mat-action-row>
     </mat-expansion-panel>
   </mat-accordion>
-  <ng-template #noPosts class="info-text mat-body-1">
-    <p>No posts added yet!</p>
-  </ng-template>
+  <mat-paginator
+    [length]="posts.length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[1, 2, 5, 10, 25]"
+    (page)="onPaginatorChange($event)"
+    aria-label="Select page"
+  >
+  </mat-paginator>
 </div>
+<ng-template #noPosts class="info-text mat-body-1">
+  <p>No posts added yet!</p>
+</ng-template>

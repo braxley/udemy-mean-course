@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
@@ -28,12 +29,13 @@ import { PostListComponent } from './posts/post-list/post-list.component';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    MatInputModule,
-    MatCardModule,
     MatButtonModule,
-    MatToolbarModule,
+    MatCardModule,
     MatExpansionModule,
+    MatInputModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatToolbarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

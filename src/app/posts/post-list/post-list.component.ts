@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { PostsService } from '../posts.service';
 
 @Component({
@@ -9,6 +10,8 @@ import { PostsService } from '../posts.service';
 export class PostListComponent {
   isLoading = true;
   posts$ = this.postsService.posts$;
+  pageSize = 10;
+  pageIndex = 0;
 
   constructor(
     public postsService: PostsService,
@@ -21,5 +24,10 @@ export class PostListComponent {
 
   onDeletePost(postId: string) {
     this.postsService.deletePost(postId);
+  }
+
+  onPaginatorChange(pageEvent: PageEvent) {
+    this.pageSize = pageEvent.pageSize;
+    this.pageIndex = pageEvent.pageIndex;
   }
 }
