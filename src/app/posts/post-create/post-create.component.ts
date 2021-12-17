@@ -51,7 +51,6 @@ export class PostCreateComponent implements OnInit {
             })
           )
           .subscribe((backendPost: BackendPost) => {
-            console.log(backendPost);
             this.currentPost = {
               id: backendPost._id,
               title: backendPost.title,
@@ -61,6 +60,7 @@ export class PostCreateComponent implements OnInit {
             this.form.setValue({
               title: this.currentPost.title,
               content: this.currentPost.content,
+              image: this.currentPost.imagePath,
             });
             this.isLoading = false;
           });
@@ -101,7 +101,8 @@ export class PostCreateComponent implements OnInit {
       : this.postsService.updatePost(
           this.currentPost!.id!,
           this.form.value.title,
-          this.form.value.content
+          this.form.value.content,
+          this.form.value.image
         );
     this.router.navigate(['/']);
     this.form.reset();

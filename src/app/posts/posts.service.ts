@@ -33,9 +33,8 @@ export class PostsService {
               title: post.title,
               content: post.content,
               id: post._id,
-              imagePath: '',
+              imagePath: post.imagePath,
             };
-            // imagePath will be adapted later
             return transformedPost;
           });
         })
@@ -76,16 +75,29 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, content: string) {
+  updatePost(id: string, title: string, content: string, image: File | string) {
+    let postData: FormData | Post;
+    if (typeof image === 'object') {
+      postData = new FormData();
+      postData.append('id', id);
+      postData.append('title', title);
+      postData.append('content', content);
+      postData.append('image', image, title);
+    } else {
+      postData = { id, title, content, imagePath: image };
+    }
+
     this.httpClient
-      .put(`http://localhost:3000/api/posts/${id}`, { title, content })
-      .subscribe(() => {
+      .put<{ message: string; post: BackendPost }>(
+        `http://localhost:3000/api/posts/${id}`,
+        postData
+      )
+      .subscribe((response: { message: string; post: BackendPost }) => {
         const postInArray = this.posts!.find((post: Post) => post.id === id);
         if (postInArray) {
           postInArray.title = title;
           postInArray.content = content;
-          postInArray.imagePath = '';
-          // imagePath will be adapted later
+          postInArray.imagePath = response.post.imagePath;
         }
       });
   }
