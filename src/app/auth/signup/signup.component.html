@@ -1,6 +1,6 @@
 <mat-card>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form (submit)="onLogin(loginForm)" *ngIf="!isLoading" #loginForm="ngForm">
+  <form (submit)="onSignup(signupForm)" *ngIf="!isLoading" #signupForm="ngForm">
     <mat-form-field>
       <input
         type="email"
@@ -31,6 +31,6 @@
         >Please enter a valid password.</mat-error
       >
     </mat-form-field>
-    <button mat-raised-button color="accent" type="submit">Login</button>
+    <button mat-raised-button color="accent" type="submit">Sign Up</button>
   </form>
 </mat-card>
