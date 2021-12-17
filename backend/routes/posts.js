@@ -42,9 +42,25 @@ router.post("", multer({ storage }).single("image"), (req, res, next) => {
 });
 
 router.get("", (req, res, next) => {
-  Post.find().then((documents) => {
-    res.status(200).json({ message: "Fetching successful!", posts: documents });
-  });
+  const page = +req.query.page;
+  const pageSize = +req.query.pageSize;
+  const postQuery = Post.find();
+  let fetchedPosts;
+  if (page && pageSize) {
+    postQuery.skip((page - 1) * pageSize).limit(pageSize);
+  }
+  postQuery
+    .then((documents) => {
+      fetchedPosts = documents;
+      Post.count();
+    })
+    .then((count) => {
+      res.status(200).json({
+        message: "Fetching successful!",
+        posts: fetchedPosts,
+        maxPosts: count,
+      });
+    });
 });
 
 router.get("/:id", (req, res, next) => {

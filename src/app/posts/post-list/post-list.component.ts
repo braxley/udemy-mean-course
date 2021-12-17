@@ -9,25 +9,31 @@ import { PostsService } from '../posts.service';
 })
 export class PostListComponent {
   isLoading = true;
-  posts$ = this.postsService.posts$;
-  pageSize = 10;
-  pageIndex = 0;
+  postsData$ = this.postsService.postsData$;
+  pageSize = 2;
+  currentPage = 1;
 
   constructor(
     public postsService: PostsService,
     private cdRef: ChangeDetectorRef
-  ) {}
+  ) {
+    this.postsService.getPosts(this.pageSize, this.currentPage);
+  }
 
   ngAfterViewChecked() {
     this.cdRef.detectChanges();
   }
 
   onDeletePost(postId: string) {
-    this.postsService.deletePost(postId);
+    this.isLoading = true;
+    this.postsService.deletePost(postId).subscribe(() => {
+      this.isLoading = false;
+      this.postsService.getPosts(this.pageSize, this.currentPage);
+    });
   }
 
   onPaginatorChange(pageEvent: PageEvent) {
     this.pageSize = pageEvent.pageSize;
-    this.pageIndex = pageEvent.pageIndex;
+    this.currentPage = pageEvent.pageIndex + 1;
   }
 }

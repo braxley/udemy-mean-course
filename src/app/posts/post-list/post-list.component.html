@@ -1,13 +1,13 @@
 <ng-template #loadingSpinner>
   <mat-spinner></mat-spinner>
 </ng-template>
-<div *ngIf="posts$ | async as posts; else loadingSpinner">
-  <mat-accordion multi="true" *ngIf="posts.length > 0; else noPosts">
+<div *ngIf="postsData$ | async as postsData; else loadingSpinner">
+  <mat-accordion multi="true" *ngIf="postsData.posts.length > 0; else noPosts">
     <mat-expansion-panel
       *ngFor="
-        let post of posts.slice(
-          pageIndex * pageSize,
-          (pageIndex + 1) * pageSize
+        let post of postsData.posts.slice(
+          (currentPage - 1) * pageSize,
+          currentPage * pageSize
         )
       "
     >
@@ -29,7 +29,7 @@
     </mat-expansion-panel>
   </mat-accordion>
   <mat-paginator
-    [length]="posts.length"
+    [length]="postsData.posts.length"
     [pageSize]="pageSize"
     [pageSizeOptions]="[1, 2, 5, 10, 25]"
     (page)="onPaginatorChange($event)"
