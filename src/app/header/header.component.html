@@ -2,16 +2,19 @@
   <span><a routerLink="">MyMessages</a></span>
   <div class="spacer"></div>
   <ul>
-    <li>
+    <li *ngIf="isAuthenticated$ | async">
       <a mat-button routerLinkActive="mat-accent" routerLink="create"
         >New Post</a
       >
     </li>
-    <li>
+    <li *ngIf="!(isAuthenticated$ | async)">
       <a mat-button routerLinkActive="mat-accent" routerLink="login">Login</a>
     </li>
-    <li>
+    <li *ngIf="!(isAuthenticated$ | async)">
       <a mat-button routerLinkActive="mat-accent" routerLink="signup">Signup</a>
     </li>
+    <button mat-button *ngIf="isAuthenticated$ | async" (click)="onLogout()">
+      Logout
+    </button>
   </ul>
 </mat-toolbar>
