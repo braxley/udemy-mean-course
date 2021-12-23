@@ -40,7 +40,9 @@ router.post("/login", (req, res, next) => {
           "this_is_only_a_development_key",
           { expiresIn: "1h" }
         );
-        return res.status(200).json({ message: "Auth succeeded!", token });
+        return res
+          .status(200)
+          .json({ message: "Auth succeeded!", token, expiresIn: 3600 });
       }
       res.status(401).json({ message: "Auth failed!" });
     })
