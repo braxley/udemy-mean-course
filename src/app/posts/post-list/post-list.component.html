@@ -18,7 +18,7 @@
         <img [src]="post.imagePath" alt="" />
       </div>
       <p>{{ post.content }}</p>
-      <mat-action-row *ngIf="isAuthenticated$ | async">
+      <mat-action-row *ngIf="currentUserId === post.creator">
         <button mat-button color="primary" [routerLink]="['/create', post.id]">
           EDIT
         </button>

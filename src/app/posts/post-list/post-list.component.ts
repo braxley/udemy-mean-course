@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { tap } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { PostsService } from '../posts.service';
 
@@ -9,12 +10,17 @@ import { PostsService } from '../posts.service';
   styleUrls: ['./post-list.component.scss'],
 })
 export class PostListComponent {
+  currentUserId: string | undefined = this.authService.currentUserId;
   isLoading = true;
   postsData$ = this.postsService.postsData$;
   pageSize = 2;
   currentPage = 1;
 
-  isAuthenticated$ = this.authService.isAuthenticated$;
+  isAuthenticated$ = this.authService.isAuthenticated$.pipe(
+    tap(() => {
+      this.currentUserId = this.authService.currentUserId;
+    })
+  );
 
   constructor(
     private postsService: PostsService,

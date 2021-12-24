@@ -35,14 +35,15 @@ router.post("/login", (req, res, next) => {
     })
     .then((result) => {
       if (result) {
+        const userId = fetchedUser._id;
         const token = jwt.sign(
-          { email: fetchedUser.email, userId: fetchedUser._id },
+          { email: fetchedUser.email, userId },
           "this_is_only_a_development_key",
           { expiresIn: "1h" }
         );
         return res
           .status(200)
-          .json({ message: "Auth succeeded!", token, expiresIn: 3600 });
+          .json({ message: "Auth succeeded!", token, expiresIn: 3600, userId });
       }
       res.status(401).json({ message: "Auth failed!" });
     })
