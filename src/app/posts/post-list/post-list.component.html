@@ -27,15 +27,15 @@
         </button>
       </mat-action-row>
     </mat-expansion-panel>
+    <mat-paginator
+      [length]="postsData.posts.length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[1, 2, 5, 10, 25]"
+      (page)="onPaginatorChange($event)"
+      aria-label="Select page"
+    >
+    </mat-paginator>
   </mat-accordion>
-  <mat-paginator
-    [length]="postsData.posts.length"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="[1, 2, 5, 10, 25]"
-    (page)="onPaginatorChange($event)"
-    aria-label="Select page"
-  >
-  </mat-paginator>
 </div>
 <ng-template #noPosts class="info-text mat-body-1">
   <p>No posts added yet!</p>

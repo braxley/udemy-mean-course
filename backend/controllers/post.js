@@ -79,7 +79,7 @@ exports.updatePost = (req, res, next) => {
   });
   Post.updateOne({ _id: req.params.id, creator: userId }, post)
     .then((result) => {
-      if (result.nModified > 0) {
+      if (result.modifiedCount > 0) {
         res.status(200).json({ message: "Successfully updated!", post });
       } else {
         res.status(401).json({ message: "The user not authorized!" });

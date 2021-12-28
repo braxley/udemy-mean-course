@@ -22,37 +22,6 @@ export class PostsService {
 
   constructor(private httpClient: HttpClient, private router: Router) {}
 
-  // getPosts() {
-  //   this.httpClient
-  //     .get<{ message: string; posts: BackendPost[]; maxPosts: number }>(
-  //       'http://localhost:3000/api/posts'
-  //     )
-  //     .pipe(
-  //       map(
-  //         (postData: {
-  //           message: string;
-  //           posts: BackendPost[];
-  //           maxPosts: number;
-  //         }) => {
-  //           return {
-  //             posts: postData.posts.map((post: BackendPost) => {
-  //               return {
-  //                 title: post.title,
-  //                 content: post.content,
-  //                 id: post._id,
-  //                 imagePath: post.imagePath,
-  //               } as Post;
-  //             }),
-  //             maxPosts: postData.maxPosts,
-  //           };
-  //         }
-  //       )
-  //     )
-  //     .subscribe((postData: { posts: Post[]; maxPosts: number }) => {
-  //       this.postsData$$.next(postData);
-  //     });
-  // }
-
   getPosts(postsPerPage?: number, currentPage?: number) {
     if (!Boolean(postsPerPage && currentPage)) {
       postsPerPage = 10;
