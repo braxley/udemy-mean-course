@@ -36,10 +36,15 @@ export class PostListComponent {
 
   onDeletePost(postId: string) {
     this.isLoading = true;
-    this.postsService.deletePost(postId).subscribe(() => {
-      this.isLoading = false;
-      this.postsService.getPosts(this.pageSize, this.currentPage);
-    });
+    this.postsService.deletePost(postId).subscribe(
+      () => {
+        this.isLoading = false;
+        this.postsService.getPosts(this.pageSize, this.currentPage);
+      },
+      () => {
+        this.isLoading = false;
+      }
+    );
   }
 
   onPaginatorChange(pageEvent: PageEvent) {

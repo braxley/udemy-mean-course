@@ -17,8 +17,10 @@ router.post("/signup", (req, res, next) => {
       .then((result) => {
         res.status(201).json({ message: "Successfully signed up!", result });
       })
-      .catch((error) => {
-        res.status(500).json({ error });
+      .catch(() => {
+        res
+          .status(500)
+          .json({ message: "Invalid authentication credentials!" });
       });
   });
 });
@@ -31,7 +33,7 @@ router.post("/login", (req, res, next) => {
         fetchedUser = user;
         return bcrypt.compare(req.body.password, user.password);
       }
-      return res.status(401).json({ message: "Auth failed!" });
+      return res.status(401).json({ message: "Auth failed" });
     })
     .then((result) => {
       if (result) {
@@ -45,10 +47,10 @@ router.post("/login", (req, res, next) => {
           .status(200)
           .json({ message: "Auth succeeded!", token, expiresIn: 3600, userId });
       }
-      res.status(401).json({ message: "Auth failed!" });
+      res.status(401).json({ message: "Invalid authentication credentials!" });
     })
     .catch((error) => {
-      return res.status(401).json({ error });
+      return res.status(401).json({ message: "Login failed" });
     });
 });
 
